@@ -222,7 +222,7 @@ public class OrderDetailsActivity extends AppCompatActivity implements View.OnCl
             //orderDetailsPresenter.updateOrderStatus(2, order.getId());
         }else if (v == backToMain){
 
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
     }

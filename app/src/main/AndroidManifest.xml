@@ -13,12 +13,10 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".OrderDetailsActivity"
-            android:theme="@style/AppTheme2"
-            android:parentActivityName=".OrdersActivity" />
-        <activity
-            android:name=".OrdersActivity" />
-        <activity
-            android:name=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme2" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

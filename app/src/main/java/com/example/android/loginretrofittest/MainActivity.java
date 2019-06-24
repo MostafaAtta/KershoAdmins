@@ -1,137 +1,76 @@
 package com.example.android.loginretrofittest;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
-import com.example.android.loginretrofittest.R;
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
-    private EditText editTextUsername, editTextPassword;
-    private TextView textViewResult;
+//    private TextView textViewOrders;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        editTextUsername = findViewById(R.id.editTextUsername);
-        editTextPassword = findViewById(R.id.editTextPassword);
-        textViewResult = findViewById(R.id.textViewResult);
+        BottomNavigationView navigationView = findViewById(R.id.navigationView);
+        navigationView.setOnNavigationItemSelectedListener(this);
 
-        findViewById(R.id.buttonLogin).setOnClickListener(this);
+//        textViewOrders = findViewById(R.id.textViewOrders);
+//
+//        User user = SharedPrefManager.getInstance(this).getSavedUser();
+//        textViewOrders.setText("User " + user.getUsername() + "\n"
+//                + "Type " + user.getType() + "\n"
+//                + "ID " + user.getId() + "\n"
+//        );
+
+        displayFragment(new CurOrdersFragment());
     }
 
-    //here we override the on start to check first if user is logged in then we direct user
-//to orders activity directly
-//TODO uncomment the onstart
+    private void displayFragment (Fragment fragment){
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.relativeCont, fragment)
+                .commit();
+
+    }
+
+    //here we check if user is NOT logged in then direct user to main activity to login
     @Override
     protected void onStart() {
         super.onStart();
 
-        if (SharedPrefManager.getInstance(this).isLoggedIn()){
-            Intent intent = new Intent(MainActivity.this, OrdersActivity.class);
+        if (!SharedPrefManager.getInstance(this).isLoggedIn()) {
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         }
     }
 
-    private void userLogin() {
-        String username = editTextUsername.getText().toString();
-        String password = editTextPassword.getText().toString();
-
-
-        if (username.isEmpty()) {
-            editTextUsername.setError("Username is required");
-            editTextUsername.requestFocus();
-            return;
-        }
-        if (password.isEmpty()) {
-            editTextPassword.setError("Password is required");
-            editTextPassword.requestFocus();
-            return;
-        }
-
-        Call<Login> call = RetrofitClient.getInstance().getApi().userLogin(username, password);
-
-        call.enqueue(new Callback<Login>() {
-            @Override
-            public void onResponse(Call<Login> call, Response<Login> response) {
-                if (!response.isSuccessful()) {
-                    textViewResult.setText("code: " + response.code());
-                    return;
-                }
-
-                Login loginResponse = response.body();
-                String content = "";
-
-                if (loginResponse.isError() == false) {
-
-                    content += "Error: " + loginResponse.isError() + "\n";
-                    content += "Message: " + loginResponse.getMessage() + "\n";
-                    content += "User ID: " + loginResponse.getUser().getId() + "\n";
-                    content += "User Type: " + loginResponse.getUser().getType() + "\n";
-                    content += "User Username: " + loginResponse.getUser().getUsername() + "\n\n";
-
-                    Log.i("content", content);
-
-                    textViewResult.append(content);
-
-//now if error is false, login successful, we will call shared pref, pass the context (main act)
-//and save the user with saveUser method defined in sharedpref class, and get the user to be shared
-//from the login response body
-                    SharedPrefManager.getInstance(MainActivity.this).saveUser(loginResponse.getUser());
-//also we will start the orders activity but we need to set flags to start it as new task and clear previous tasks
-                    Intent intent = new Intent(MainActivity.this, OrdersActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    startActivity(intent);
-                } else {
-
-                    content += "Error: " + loginResponse.isError() + "\n";
-                    content += "Message: " + loginResponse.getMessage() + "\n\n";
-
-                    Log.i("content", content);
-
-                    textViewResult.append(content);
-
-                }
-
-            }
-
-            @Override
-            public void onFailure(Call<Login> call, Throwable t) {
-                textViewResult.setText(t.getMessage());
-
-            }
-        });
-
-    }
-
 
     @Override
-    public void onClick(View view) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-        InputMethodManager mgr = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-        mgr.hideSoftInputFromWindow(editTextUsername.getWindowToken(), 0);
-        mgr.hideSoftInputFromWindow(editTextPassword.getWindowToken(), 0);
+        Fragment fragment = null;
 
+        switch (item.getItemId()){
+            case R.id.menuCurOrders:
+                fragment = new CurOrdersFragment();
+                break;
+            case R.id.menuPreOrders:
+                fragment = new PreOrdersFragment();
+                break;
+        }
+        if (fragment != null){
+            displayFragment(fragment);
+        }
 
-        userLogin();
-
-
+        return false;
     }
 }
 
-//TODO: remove result text view here anf from layout
-
+//TODO: refresh layout "https://www.youtube.com/watch?v=K0-e5vfmzbA&list=PLk7v1Z2rk4hhYrhtRtAX2zVm-FHV38-TQ&index=3"
