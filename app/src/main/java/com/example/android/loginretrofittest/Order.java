@@ -16,7 +16,7 @@ public class Order implements Serializable {
     private ArrayList<Dish> dishesList;
 
 
-    private int orderId, subtotal, delivery, total, discount, userId, address, status;
+    private int orderId, subtotal, delivery, total, discount, userId, addressId, status;
     private String location, schedule, orderTime, creationTime, phone, kitchen;
 
 
@@ -25,7 +25,7 @@ public class Order implements Serializable {
 
 
     public Order(int orderId, ArrayList<Dish> dishesList, int status, int subtotal, int delivery, int total, int discount, int userId, String location,
-                 int address, String phone, String schedule, String orderTime, String creationTime, Address fullAddress, String kitchen) {
+                 int addressId, String phone, String schedule, String orderTime, String creationTime, Address fullAddress, String kitchen) {
         this.dishesList = dishesList;
         this.orderId = orderId;
         this.status = status;
@@ -35,7 +35,7 @@ public class Order implements Serializable {
         this.discount = discount;
         this.userId = userId;
         this.location = location;
-        this.address = address;
+        this.addressId = addressId;
         this.schedule = schedule;
         this.phone = phone;
         this.orderTime = orderTime;
@@ -45,7 +45,7 @@ public class Order implements Serializable {
     }
 
     public Order(Map<String, String> dishes, Map<String, String> count, int subtotal, int delivery, int total, int discount, int userId, String location,
-                 int address, String phone, String schedule, String orderTime, String creationTime) {
+                 int addressId, String phone, String schedule, String orderTime, String creationTime) {
         this.dishes = dishes;
         this.count = count;
         this.subtotal = subtotal;
@@ -54,7 +54,7 @@ public class Order implements Serializable {
         this.discount = discount;
         this.userId = userId;
         this.location = location;
-        this.address = address;
+        this.addressId = addressId;
         this.schedule = schedule;
         this.phone = phone;
         this.orderTime = orderTime;
@@ -100,8 +100,8 @@ public class Order implements Serializable {
         return location;
     }
 
-    public int getAddress() {
-        return address;
+    public int getAddressId() {
+        return addressId;
     }
 
     public void setUserId(int userId) {
